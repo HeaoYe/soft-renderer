@@ -4,7 +4,6 @@
 #include "Hittable.hpp"
 #include "Ray.hpp"
 #include "Vector.hpp"
-#include <bits/types/cookie_io_functions_t.h>
 #include <cstddef>
 #include <cstdint>
 #include <fstream>
