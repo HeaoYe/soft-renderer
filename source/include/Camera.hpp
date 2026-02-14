@@ -22,8 +22,8 @@ public:
         maxDepth_(maxDepth_) {}
 
   Ray getRay(size_t x, size_t y) {
-    return Ray{orig_, higherLeftCorner + static_cast<double>(x) * u +
-                          static_cast<double>(y) * v - orig_};
+    return {orig_, higherLeftCorner + static_cast<double>(x) * u +
+                       static_cast<double>(y) * v};
   }
   Vec3 orig_;
   Vec3 u, v;
