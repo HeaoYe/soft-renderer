@@ -52,11 +52,14 @@ int main(int argc, char *argv[]) {
   Imagefile << "P6\n" << IMAGE_WIDTH << ' ' << IMAGE_HEIGHT << "\n255\n";
 
   // camera
-  Camera cam(Vec3{0, 0, -5}, 1.6, 0.9, IMAGE_WIDTH, IMAGE_HEIGHT, 0.8,
+  Camera cam(Vec3{0, -1, -5}, 1.6, 0.9, IMAGE_WIDTH, IMAGE_HEIGHT, 0.8,
              Vec3{0, -1, 0}, Vec3{0, 0, 1}, 100);
 
   world.add(
-      std::make_shared<Sphere>(Vec3{0, 0, 0}, 1, std::make_shared<Lambert>()));
+      std::make_shared<Sphere>(Vec3{0, -1, 0}, 1, std::make_shared<Lambert>()));
+
+  world.add(std::make_shared<Plane>(Vec3{0, 0, 0}, Vec3{0, -1, 0},
+                                    std::make_shared<Lambert>()));
 
   // for loops
   for (size_t y{0}; y != IMAGE_HEIGHT; y++) {

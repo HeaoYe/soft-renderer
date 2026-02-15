@@ -2,8 +2,6 @@
 
 #include "Ray.hpp"
 #include "Vector.hpp"
-#include "glm/geometric.hpp"
-#include <iostream>
 #include <limits>
 #include <memory>
 #include <vector>
@@ -76,6 +74,33 @@ public:
 private:
   Vec3 center_;
   double radius_;
+  std::shared_ptr<Material> mat_;
+};
+
+class Plane final : public Hittable {
+public:
+  Plane(Vec3 center, Vec3 normal, std::shared_ptr<Material> mat)
+      : center_(center), normal_(normalize(normal)), mat_(mat) {}
+  bool hit(Ray &r, double tMin, double tMax, HitInfo &hitInf) const override {
+    auto root = dot(center_ - r.orig_, normal_) / dot(r.dir_, normal_);
+    if (root < tMin || root > tMax) {
+      return false;
+    }
+    if (root < hitInf.t) {
+      hitInf.t = root;
+      hitInf.p = r.at(hitInf.t);
+      hitInf.n = normal_;
+      hitInf.frontFace = dot(r.dir_, hitInf.n) < 0;
+      if (!hitInf.frontFace)
+        hitInf.n = -hitInf.n;
+      hitInf.mat = mat_;
+    }
+    return true;
+  }
+
+private:
+  Vec3 center_;
+  Vec3 normal_;
   std::shared_ptr<Material> mat_;
 };
 
