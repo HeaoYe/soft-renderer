@@ -54,13 +54,13 @@ int main(int argc, char *argv[]) {
   Imagefile << "P6\n" << IMAGE_WIDTH << ' ' << IMAGE_HEIGHT << "\n255\n";
 
   // camera
-  Camera cam(Vec3{0, -15, -20}, 1.6, 0.9, IMAGE_WIDTH, IMAGE_HEIGHT, 0.8,
-             Vec3{0, -1, 0}, Vec3{0, 0.75, 1}, 100);
+  Camera cam(Vec3{0, -20, -20}, 1.6, 0.9, IMAGE_WIDTH, IMAGE_HEIGHT, 0.8,
+             Vec3{0, -1, 0}, Vec3{0, 1, 1}, 100);
 
   world.add(std::make_shared<Sphere>(Vec3{-5.5, -5, 0}, 5,
                                      std::make_shared<Lambert>()));
-  // world.add(std::make_shared<Sphere>(Vec3{5.5, -5, 0}, 5,
-  //                                    std::make_shared<Lambert>()));
+  world.add(std::make_shared<Sphere>(Vec3{5.5, -5, 0}, 3,
+                                     std::make_shared<Lambert>()));
 
   world.add(std::make_shared<Plane>(Vec3{0, 0, 0}, Vec3{0, -1, 0},
                                     std::make_shared<Metal>()));

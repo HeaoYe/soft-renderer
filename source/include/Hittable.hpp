@@ -42,19 +42,20 @@ public:
   Sphere(Vec3 center, double radius, std::shared_ptr<Material> mat)
       : center_(center), radius_(radius), mat_(mat) {}
   bool hit(Ray &r, double tMin, double tMax, HitInfo &hitInf) const override {
+    Vec3 oc = center_ - r.orig_;
     auto a = dot(r.dir_, r.dir_);
-    auto halfB = dot(r.dir_, (r.orig_ - center_));
-    auto c = dot((r.orig_ - center_), (r.orig_ - center_)) - radius_ * radius_;
-    auto discrimination = halfB * halfB - a * c;
+    auto h = dot(r.dir_, oc);
+    auto c = dot(oc, oc) - radius_ * radius_;
+    auto discriminant = h * h - a * c;
 
-    if (discrimination < 0)
+    if (discriminant < 0)
       return false;
 
-    auto sqrtd = sqrt(discrimination);
+    auto sqrtd = sqrt(discriminant);
 
-    auto root = (-halfB - sqrtd) / a;
+    auto root = (h - sqrtd) / a;
     if (root < tMin || root > tMax) {
-      root = (-halfB + sqrtd) / a;
+      root = (h + sqrtd) / a;
       if (root < tMin || root > tMax)
         return false;
     }
