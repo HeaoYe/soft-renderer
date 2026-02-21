@@ -33,13 +33,17 @@ Vec3 rayColor(size_t depth, Ray r, Vec3 attenuation) {
   depth++;
 
   Ray scattered;
-  HitInfo hitInf {};
+  HitInfo hitInf{};
   bool hit = world.hit(r, 0.001, std::numeric_limits<double>::max(), hitInf);
   if (hit) {
     if (hitInf.mat->scatter(r, hitInf, attenuation, scattered))
       return attenuation * rayColor(depth, scattered, attenuation);
   } else {
-    return {0, 1, 1};
+    auto a = 0.5 * (normalize(r.dir_).y + 1);
+    Vec3 up{0.5, 0.7, 1.0};
+    Vec3 down{1, 1, 1.0};
+    return a * down + (1 - a) * up;
+    return {1, 1, 1};
   }
   return {1, 0, 0};
 }
@@ -55,11 +59,11 @@ int main(int argc, char *argv[]) {
   Imagefile << "P6\n" << IMAGE_WIDTH << ' ' << IMAGE_HEIGHT << "\n255\n";
 
   // camera
-  Camera cam(Vec3{0, -20, -20}, 1.6, 0.9, IMAGE_WIDTH, IMAGE_HEIGHT, 0.8,
-             Vec3{0, -1, 0}, Vec3{0, 1, 1}, 100);
+  Camera cam(Vec3{0, -5, -30}, 1.6, 0.9, IMAGE_WIDTH, IMAGE_HEIGHT, 0.8,
+             Vec3{-0.25, -1, 0}, Vec3{0, 0, 1}, 100);
 
-  world.add(std::make_shared<Sphere>(Vec3{-5.5, -5, 0}, 5,
-                                     std::make_shared<Lambert>()));
+  world.add(std::make_shared<Sphere>(Vec3{-5.5, -5.5, 0}, 5,
+                                     std::make_shared<Metal>()));
   world.add(std::make_shared<Sphere>(Vec3{5.5, -5, 0}, 3,
                                      std::make_shared<Lambert>()));
 
