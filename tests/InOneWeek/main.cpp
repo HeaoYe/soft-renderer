@@ -34,7 +34,7 @@ Vec3 rayColor(size_t depth, Ray r, Vec3 attenuation) {
 
   Ray scattered;
   HitInfo hitInf{};
-  bool hit = world.hit(r, 0.001, std::numeric_limits<double>::max(), hitInf);
+  bool hit = world.hit(r, 0.0001, std::numeric_limits<double>::max(), hitInf);
   if (hit) {
     if (hitInf.mat->scatter(r, hitInf, attenuation, scattered))
       return attenuation * rayColor(depth, scattered, attenuation);
@@ -60,15 +60,34 @@ int main(int argc, char *argv[]) {
 
   // camera
   Camera cam(Vec3{0, -5, -30}, 1.6, 0.9, IMAGE_WIDTH, IMAGE_HEIGHT, 0.8,
-             Vec3{-0.25, -1, 0}, Vec3{0, 0, 1}, 100);
+             Vec3{0, -1, 0}, Vec3{0, 0, 1}, 100);
 
-  world.add(std::make_shared<Sphere>(Vec3{-5.5, -5.5, 0}, 5,
-                                     std::make_shared<Metal>()));
-  world.add(std::make_shared<Sphere>(Vec3{5.5, -5, 0}, 3,
-                                     std::make_shared<Lambert>()));
+  world.add(std::make_shared<Sphere>(
+      Vec3{
+          0,
+          -5.0001,
+          0,
+      },
+      5, std::make_shared<Lambert>()));
+
+  world.add(std::make_shared<Sphere>(
+      Vec3{
+          10.1,
+          -5.0001,
+          0,
+      },
+      5, std::make_shared<Metal>()));
+
+  world.add(std::make_shared<Sphere>(
+      Vec3{
+          3,
+          -6.0001,
+          -10.0001,
+      },
+      6, std::make_shared<Dielectric>()));
 
   world.add(std::make_shared<Plane>(Vec3{0, 0, 0}, Vec3{0, -1, 0},
-                                    std::make_shared<Metal>()));
+                                    std::make_shared<Lambert>()));
 
   // for loops
   for (size_t y{0}; y != IMAGE_HEIGHT; y++) {

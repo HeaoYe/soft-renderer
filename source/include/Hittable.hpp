@@ -2,9 +2,12 @@
 
 #include "Ray.hpp"
 #include "Vector.hpp"
+#include <cmath>
 #include <limits>
 #include <memory>
 #include <vector>
+
+inline double randomDouble() { return std::rand() / (RAND_MAX + 1.0); }
 
 class Material;
 class HitInfo {
@@ -115,7 +118,7 @@ class Metal final : public Material {
   bool scatter(const Ray &rIn, const HitInfo &hitInf, Vec3 &attenuation,
                Ray &scattered) const {
     Vec3 reflected = normalize(reflect(rIn.dir_, hitInf.n));
-    scattered = {hitInf.p + 0.05 * reflected, reflected};
+    scattered = {hitInf.p, reflected};
     return true;
   }
 };
@@ -125,8 +128,34 @@ public:
   bool scatter(const Ray &rIn, const HitInfo &hitInf, Vec3 &attenuation,
                Ray &scattered) const final {
     attenuation = {0.75, 0.75, 0.75};
-    scattered = {hitInf.p + 0.001 * hitInf.n,
-                 hitInf.n + Vec3(sphericalRand(1.0f))};
+    scattered = {hitInf.p, hitInf.n + Vec3(sphericalRand(1.0f))};
     return true;
+  }
+};
+class Dielectric final : public Material {
+  bool scatter(const Ray &rIn, const HitInfo &hitInf, Vec3 &attenuation,
+               Ray &scattered) const {
+    double ri = hitInf.frontFace ? 1.5 : 1 / 1.5;
+
+    double cosTheta = fmin(1.0f, dot(-normalize(rIn.dir_), hitInf.n));
+    double sinTheta = sqrt(1 - cosTheta * cosTheta);
+
+    if (ri * sinTheta > 1.0 || reflectance(cosTheta, ri) > randomDouble()) {
+      Vec3 reflected = normalize(reflect(rIn.dir_, hitInf.n));
+      scattered = {hitInf.p, reflected};
+      return true;
+    }
+
+    Vec3 reflected = normalize(refract(-normalize(rIn.dir_), hitInf.n, ri));
+    scattered = {hitInf.p, reflected};
+    return true;
+  }
+
+private:
+  static double reflectance(double cosine, double refractionIndex) {
+    // Use Schlick's approximation for reflectance.
+    auto r0 = (1 - refractionIndex) / (1 + refractionIndex);
+    r0 = r0 * r0;
+    return r0 + (1 - r0) * std::pow((1 - cosine), 5);
   }
 };
