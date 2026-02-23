@@ -97,7 +97,7 @@ int main(int argc, char *argv[]) {
     std::execution::seq,
   #endif
     buffer_range.begin(), buffer_range.end(),
-    [&, ptr=buffer.data()](size_t index) {
+    [&](size_t index) {
       size_t x = index % IMAGE_WIDTH;
       size_t y = index / IMAGE_WIDTH;
       if (x == 0) {
@@ -106,9 +106,9 @@ int main(int argc, char *argv[]) {
 
       Vec3 attenuation{1, 1, 1};
       Vec3 color = rayColor(0, cam.getRay(x, y), attenuation);
-      *(ptr + (index * 3 + 0)) = toByte(color.r);
-      *(ptr + (index * 3 + 1)) = toByte(color.g);
-      *(ptr + (index * 3 + 2)) = toByte(color.b);
+      buffer[index * 3 + 0] = toByte(color.r);
+      buffer[index * 3 + 1] = toByte(color.g);
+      buffer[index * 3 + 2] = toByte(color.b);
     });
   Imagefile.write(reinterpret_cast<const char *>(buffer.data()), buffer.size());
 
