@@ -1,8 +1,10 @@
 
+#include "Buffer.hpp"
 #include "Camera.hpp"
 #include "Hittable.hpp"
 #include "Ray.hpp"
 #include "Vector.hpp"
+#include <array>
 #include <cstddef>
 #include <cstdint>
 #include <fstream>
@@ -15,14 +17,7 @@ inline Ray getRay(Camera &cam, size_t x, size_t y) {
                             static_cast<double>(y) * cam.v};
 }
 
-void writeColor(const Vec3 &col, std::ofstream &file) {
-  uint8_t r = int(col.r * 255.999);
-  uint8_t g = int(col.g * 255.999);
-  uint8_t b = int(col.b * 255.999);
-  file.write(reinterpret_cast<char *>(&r), 1);
-  file.write(reinterpret_cast<char *>(&g), 1);
-  file.write(reinterpret_cast<char *>(&b), 1);
-}
+uint8_t toByte(double col) { return int(col * 255.999); }
 
 HittableList world;
 
@@ -90,14 +85,20 @@ int main(int argc, char *argv[]) {
                                     std::make_shared<Lambert>()));
 
   // for loops
+  ImageBuffer<IMAGE_WIDTH, IMAGE_HEIGHT> imageBuffer;
   for (size_t y{0}; y != IMAGE_HEIGHT; y++) {
     std::clog << "\r" << y;
     for (size_t x{0}; x != IMAGE_WIDTH; x++) {
       Vec3 attenuation{1, 1, 1};
-      writeColor(rayColor(0, cam.getRay(x, y), attenuation), Imagefile);
+      Vec3 color = rayColor(0, cam.getRay(x, y), attenuation);
+      size_t index = (y * IMAGE_WIDTH + x) * 3;
+      imageBuffer[index + 0] = toByte(color.r);
+      imageBuffer[index + 1] = toByte(color.g);
+      imageBuffer[index + 2] = toByte(color.b);
     }
   }
-
+  Imagefile.write(reinterpret_cast<const char *>(imageBuffer.getData()),
+                  imageBuffer.getSize());
   Imagefile.close();
   return 0;
 }
