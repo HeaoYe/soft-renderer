@@ -4,6 +4,7 @@ FetchContent_Declare(
   glfw
   GIT_REPOSITORY https://github.com/glfw/glfw.git
   GIT_TAG master
+  GIT_SHALLOW TRUE
 )
 FetchContent_MakeAvailable(glfw)
 
@@ -15,6 +16,7 @@ FetchContent_Declare(
   imgui
   GIT_REPOSITORY https://github.com/ocornut/imgui.git
   GIT_TAG master
+  GIT_SHALLOW TRUE
 )
 FetchContent_MakeAvailable(imgui)
 
