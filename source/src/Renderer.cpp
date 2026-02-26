@@ -1,6 +1,9 @@
 
 #include "Renderer.hpp"
+#include <random>
 
+std::random_device rd;
+std::mt19937_64 rng(rd());
 Vec3 rayColor(size_t depth, Ray r, Vec3 attenuation, HittableList &world) {
 
   if (depth == 1000)
@@ -11,7 +14,7 @@ Vec3 rayColor(size_t depth, Ray r, Vec3 attenuation, HittableList &world) {
   HitInfo hitInf{};
   bool hit = world.hit(r, 0.0001, std::numeric_limits<double>::max(), hitInf);
   if (hit) {
-    if (hitInf.mat->scatter(r, hitInf, attenuation, scattered))
+    if (hitInf.mat->scatter(rng, r, hitInf, attenuation, scattered))
       return attenuation * rayColor(depth, scattered, attenuation, world);
   } else {
     auto a = 0.5 * (normalize(r.dir_).y + 1);

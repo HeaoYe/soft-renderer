@@ -6,7 +6,6 @@
 #include "Renderer.hpp"
 #include "Vector.hpp"
 #include <cstddef>
-#include <cstdint>
 #include <fstream>
 #include <iostream>
 #include <limits>
@@ -20,28 +19,6 @@ inline Ray getRay(Camera &cam, size_t x, size_t y) {
 // uint8_t toByte(double col) { return int(col * 255.999); }
 
 HittableList world;
-
-Vec3 rayColor(size_t depth, Ray r, Vec3 attenuation) {
-
-  if (depth == 1000)
-    return {1, 0, 1};
-  depth++;
-
-  Ray scattered;
-  HitInfo hitInf{};
-  bool hit = world.hit(r, 0.0001, std::numeric_limits<double>::max(), hitInf);
-  if (hit) {
-    if (hitInf.mat->scatter(r, hitInf, attenuation, scattered))
-      return attenuation * rayColor(depth, scattered, attenuation);
-  } else {
-    auto a = 0.5 * (normalize(r.dir_).y + 1);
-    Vec3 up{0.5, 0.7, 1.0};
-    Vec3 down{1, 1, 1.0};
-    return a * down + (1 - a) * up;
-    return {1, 1, 1};
-  }
-  return {1, 0, 0};
-}
 
 // constants
 constexpr size_t IMAGE_WIDTH{1920};
