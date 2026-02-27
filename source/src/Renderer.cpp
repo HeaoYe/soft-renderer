@@ -18,8 +18,8 @@ Vec3 rayColor(size_t depth, Ray r, Vec3 attenuation, HittableList &world) {
       return attenuation * rayColor(depth, scattered, attenuation, world);
   } else {
     auto a = 0.5 * (normalize(r.dir_).y + 1);
-    Vec3 up{0.5, 0.7, 1.0};
-    Vec3 down{1, 1, 1.0};
+    Vec3 down{0.5, 0.7, 1.0};
+    Vec3 up{1, 1, 1.0};
     return a * down + (1 - a) * up;
     return {1, 1, 1};
   }

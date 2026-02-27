@@ -20,14 +20,8 @@ class RGBBuffer final : public Buffer<uint8_t, 3 * imageWidthT * imageHeightT> {
 
 class Tile final {
 public:
-  Tile(size_t fromX, size_t fromY, size_t width, size_t height, size_t spp)
-      : fromX_(fromX), fromY_(fromY), width_(width), height_(height),
-        spp_(spp) {}
-  void renderTile() {
-    // Implement the rendering logic for the tile here
-  }
+  Tile(size_t fromX, size_t fromY, size_t width, size_t height)
+      : fromX_(fromX), fromY_(fromY), width_(width), height_(height) {}
 
-private:
   size_t fromX_, fromY_, width_, height_;
-  size_t spp_;
 };

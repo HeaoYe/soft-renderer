@@ -19,16 +19,21 @@ public:
       : world_(world), cam_(cam), imageBuffer_(imageBuffer) {}
   bool render() {
 
-    for (size_t y{0}; y != imageHeightT; y++) {
-      std::clog << "\r " << y;
-      for (size_t x{0}; x != imageWidthT; x++) {
-        Vec3 attenuation{1, 1, 1};
-        Vec3 color = rayColor(0, cam_.getRay(x, y), attenuation, world_);
-        size_t index = (y * imageWidthT + x) * 3;
-        imageBuffer_[index + 0] = toByte(color.r);
-        imageBuffer_[index + 1] = toByte(color.g);
-        imageBuffer_[index + 2] = toByte(color.b);
-      }
+    // for (size_t y{0}; y != imageHeightT; y++) {
+    //   for (size_t x{0}; x != imageWidthT; x++) {
+    //     Vec3 attenuation{1, 1, 1};
+    //     Vec3 color = rayColor(0, cam_.getRay(x, y), attenuation, world_);
+    //     size_t index = (y * imageWidthT + x) * 3;
+    //     imageBuffer_[index + 0] = toByte(color.r);
+    //     imageBuffer_[index + 1] = toByte(color.g);
+    //     imageBuffer_[index + 2] = toByte(color.b);
+    //   }
+    //   std::clog << "\r " << y;
+    // }
+
+    splitIntoTiles(64, 64, 1);
+    for (auto &tile : tiles_) {
+      renderTile(tile, cam_, world_);
     }
 
     return true;
@@ -39,8 +44,8 @@ private:
   Camera &cam_;
   RGBBuffer<imageWidthT, imageHeightT> &imageBuffer_;
   size_t spp_;
+  std::deque<Tile> tiles_;
 
-  std::queue<Tile> tiles_;
   void splitIntoTiles(size_t tileWidth, size_t tileHeight, size_t spp) {
     size_t numTilesX = ceil(static_cast<double>(imageWidthT) / tileWidth);
     size_t numTilesY = ceil(static_cast<double>(imageHeightT) / tileHeight);
@@ -50,7 +55,19 @@ private:
         size_t fromY = tileY * tileHeight;
         size_t width = std::min(tileWidth, imageWidthT - fromX);
         size_t height = std::min(tileHeight, imageHeightT - fromY);
-        tiles_.emplace(fromX, fromY, width, height, spp);
+        tiles_.emplace_front(fromX, fromY, width, height);
+      }
+    }
+  }
+  void renderTile(Tile &tile, Camera &cam, HittableList &world_) {
+    for (size_t y{tile.fromY_}; y != tile.fromY_ + tile.height_; y++) {
+      for (size_t x{tile.fromX_}; x != tile.fromX_ + tile.width_; x++) {
+        Vec3 attenuation{1, 1, 1};
+        Vec3 color = rayColor(0, cam_.getRay(x, y), attenuation, world_);
+        size_t index = (y * imageWidthT + x) * 3;
+        imageBuffer_[index + 0] = toByte(color.r);
+        imageBuffer_[index + 1] = toByte(color.g);
+        imageBuffer_[index + 2] = toByte(color.b);
       }
     }
   }
